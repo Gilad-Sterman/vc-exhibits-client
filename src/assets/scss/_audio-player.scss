@@ -1,0 +1,64 @@
+@use './base' as *;
+
+.audio-player {
+  background: $color-bg-alt;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin: $spacing-lg $spacing-md;
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .audio-player__label {
+    color: $color-teal;
+    font-family: $font-heading;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: $spacing-sm;
+  }
+
+  .audio-player__controls {
+    @include flex-between;
+    gap: $spacing-md;
+  }
+
+  .audio-player__play-btn {
+    @include flex-center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: $color-navy;
+    color: $color-white;
+    flex-shrink: 0;
+    transition: $transition;
+
+    &:hover {
+      background: $color-teal;
+    }
+  }
+
+  .audio-player__progress {
+    flex: 1;
+    @include flex-col;
+    gap: $spacing-xs;
+  }
+
+  .audio-player__bar {
+    width: 100%;
+    height: 4px;
+    appearance: none;
+    background: $color-border;
+    border-radius: 2px;
+    cursor: pointer;
+    accent-color: $color-teal;
+  }
+
+  .audio-player__time {
+    @include flex-between;
+    font-size: 0.75rem;
+    color: $color-text;
+    opacity: 0.6;
+  }
+}

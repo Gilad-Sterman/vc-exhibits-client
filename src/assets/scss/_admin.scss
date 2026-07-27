@@ -1,0 +1,176 @@
+@use './base' as *;
+
+.admin-login {
+  min-height: 100vh;
+  @include flex-center;
+  background-color: $color-navy-dark;
+
+  .login-card {
+    background: $color-white;
+    border-radius: $radius-lg;
+    padding: $spacing-xxl $spacing-xl;
+    width: 100%;
+    max-width: 400px;
+    margin: $spacing-md;
+    box-shadow: 0 8px 32px rgba($color-navy-dark, 0.3);
+
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: $spacing-xl;
+      text-align: center;
+    }
+  }
+
+  .login-field {
+    margin-bottom: $spacing-md;
+
+    label {
+      display: block;
+      color: $color-navy;
+      font-size: 0.8rem;
+      font-family: $font-heading;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: $spacing-xs;
+    }
+
+    input {
+      width: 100%;
+      padding: $spacing-sm $spacing-md;
+      border: 1px solid $color-border;
+      border-radius: $radius-md;
+      font-size: 1rem;
+      transition: $transition;
+      background: $color-bg;
+
+      &:focus {
+        border-color: $color-teal;
+        background: $color-white;
+      }
+    }
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    background: $color-navy;
+    color: $color-white;
+    border-radius: $radius-md;
+    font-family: $font-heading;
+    font-size: 1rem;
+    margin-top: $spacing-md;
+    transition: $transition;
+
+    &:hover {
+      background: $color-teal;
+    }
+  }
+
+  .login-error {
+    color: #c0392b;
+    font-size: 0.85rem;
+    margin-top: $spacing-sm;
+    text-align: center;
+  }
+}
+
+.admin-layout {
+  min-height: 100vh;
+  background: $color-bg;
+
+  .admin-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: $color-navy-dark;
+    @include flex-between;
+    padding: 0 $spacing-xl;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba($color-navy-dark, 0.3);
+
+    .admin-logo {
+      color: $color-white;
+      font-family: $font-heading;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .logout-btn {
+      color: $color-white;
+      opacity: 0.7;
+      font-size: 0.85rem;
+      transition: $transition;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    @include mobile {
+      padding: 0 $spacing-md;
+    }
+  }
+
+  .admin-content {
+    padding-top: 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-left: $spacing-xl;
+    padding-right: $spacing-xl;
+
+    @include mobile {
+      padding-left: $spacing-md;
+      padding-right: $spacing-md;
+    }
+  }
+}
+
+.admin-page-header {
+  @include flex-between;
+  padding: $spacing-xl 0 $spacing-lg;
+  border-bottom: 1px solid $color-border;
+  margin-bottom: $spacing-xl;
+
+  h1 {
+    font-size: 1.4rem;
+  }
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  background: $color-navy;
+  color: $color-white;
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-md;
+  font-family: $font-heading;
+  font-size: 0.9rem;
+  transition: $transition;
+
+  &:hover {
+    background: $color-teal;
+  }
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  background: none;
+  color: $color-teal;
+  padding: $spacing-sm $spacing-lg;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-family: $font-heading;
+  font-size: 0.9rem;
+  transition: $transition;
+
+  &:hover {
+    background: $color-teal;
+    color: $color-white;
+    border-color: $color-teal;
+  }
+}

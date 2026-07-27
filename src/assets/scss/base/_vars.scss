@@ -1,0 +1,37 @@
+// Colors
+$color-bg: #f0ede6;
+$color-bg-alt: #e4e1d9;
+$color-border: #d0cfc8;
+$color-text: #212121;
+$color-navy-dark: #0d3350;
+$color-navy: #134869;
+$color-teal: #1a6a7a;
+$color-teal-light: #6aaecb;
+$color-white: #ffffff;
+
+// Typography
+$font-body: 'Days-Regular', 'Lora', Georgia, serif;
+$font-heading: 'Days-Bold', 'Lora', Georgia, serif;
+$font-hebrew: 'Alef', David, sans-serif;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 40px;
+$spacing-xxl: 64px;
+
+// Border radius
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 8px;
+$radius-xl: 12px;
+
+// Transitions
+$transition: all 0.15s;
+
+// Breakpoints
+$bp-mobile: 640px;
+$bp-tablet: 1024px;
+$bp-desktop: 1440px;
