@@ -5,10 +5,9 @@
   border: 1px solid $color-border;
   border-radius: $radius-lg;
   padding: $spacing-md;
-  margin: $spacing-lg $spacing-md;
+  margin: $spacing-lg auto;
+  width: calc(100% - #{$spacing-md * 2});
   max-width: 680px;
-  margin-left: auto;
-  margin-right: auto;
 
   .audio-player__label {
     color: $color-teal;

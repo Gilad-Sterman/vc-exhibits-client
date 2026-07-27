@@ -3,6 +3,7 @@ import ExhibitPage from './pages/ExhibitPage'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminExhibitEdit from './pages/AdminExhibitEdit'
+import AdminLayout from './components/admin/AdminLayout'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 
 function App() {
@@ -15,26 +16,14 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute>
-              <AdminDashboard />
+              <AdminLayout />
             </ProtectedRoute>
           }
-        />
-        <Route
-          path="/admin/exhibits/new"
-          element={
-            <ProtectedRoute>
-              <AdminExhibitEdit />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/exhibits/:id/edit"
-          element={
-            <ProtectedRoute>
-              <AdminExhibitEdit />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="exhibits/new" element={<AdminExhibitEdit />} />
+          <Route path="exhibits/:id/edit" element={<AdminExhibitEdit />} />
+        </Route>
         <Route path="*" element={<Navigate to="/admin/login" replace />} />
       </Routes>
     </BrowserRouter>

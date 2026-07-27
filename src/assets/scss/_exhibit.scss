@@ -116,6 +116,56 @@
     color: $color-text;
     opacity: 0.7;
     font-size: 0.95rem;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__browse-label {
+    font-family: $font-heading;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: $color-navy;
+    margin-bottom: $spacing-md;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    max-width: 360px;
+    margin: 0 auto;
+    text-align: start;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    background: $color-white;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    transition: $transition;
+    text-align: inherit;
+
+    &:hover {
+      border-color: $color-teal;
+      background: $color-bg-alt;
+    }
+  }
+
+  &__item-num {
+    color: $color-teal;
+    font-family: $font-heading;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    min-width: 28px;
+  }
+
+  &__item-title {
+    color: $color-text;
+    font-size: 0.9rem;
+    font-family: $font-hebrew;
   }
 }
 

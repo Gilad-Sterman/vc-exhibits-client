@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import useTranslation from '../../hooks/useTranslation'
 
 const ChevronLeft = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -16,7 +17,7 @@ const ChevronRight = () => (
 
 function ExhibitNav({ currentNumber }) {
   const navigate = useNavigate()
-  const lang = useSelector((state) => state.ui.lang)
+  const { t, lang, isRtl } = useTranslation()
   const allExhibits = useSelector((state) => state.exhibit.allExhibits)
   const [showDrawer, setShowDrawer] = useState(false)
 
@@ -44,20 +45,23 @@ function ExhibitNav({ currentNumber }) {
 
   return (
     <>
-      <nav className="exhibit-nav">
+      {/* dir="rtl" on the flex container flips child order visually:
+          PrevBtn (first) → right side in RTL, left side in LTR
+          NextBtn (last)  → left side in RTL, right side in LTR       */}
+      <nav className="exhibit-nav" dir={isRtl ? 'rtl' : 'ltr'}>
         <button
           className="nav-btn"
           onClick={() => prev && goTo(prev.exhibitNumber)}
           disabled={!prev}
           aria-label="Previous exhibit"
         >
-          <ChevronLeft />
-          <span>הקודם</span>
+          {isRtl ? <ChevronRight /> : <ChevronLeft />}
+          <span>{t('prev')}</span>
         </button>
 
         <button className="nav-center" onClick={() => setShowDrawer(true)} aria-label="Jump to exhibit">
           <span className="nav-exhibit-num">#{currentNumber}</span>
-          <span className="nav-exhibit-hint">כל התצוגות</span>
+          <span className="nav-exhibit-hint">{t('allExhibits')}</span>
         </button>
 
         <button
@@ -66,17 +70,22 @@ function ExhibitNav({ currentNumber }) {
           disabled={!next}
           aria-label="Next exhibit"
         >
-          <span>הבא</span>
-          <ChevronRight />
+          <span>{t('next')}</span>
+          {isRtl ? <ChevronLeft /> : <ChevronRight />}
         </button>
       </nav>
 
       {showDrawer && (
         <>
           <div className="drawer-overlay" onClick={() => setShowDrawer(false)} />
-          <div className="exhibit-jump-drawer" role="dialog" aria-label="Select exhibit">
+          <div
+            className="exhibit-jump-drawer"
+            dir={isRtl ? 'rtl' : 'ltr'}
+            role="dialog"
+            aria-label="Select exhibit"
+          >
             <div className="drawer-handle" />
-            <p className="drawer-title">בחר תצוגה</p>
+            <p className="drawer-title">{t('selectExhibit')}</p>
             <ul>
               {sorted.map((exhibit) => {
                 const title = exhibit.title?.[lang] || exhibit.title?.he || ''

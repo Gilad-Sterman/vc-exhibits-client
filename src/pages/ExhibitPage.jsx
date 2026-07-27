@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchExhibit, fetchAllExhibits, clearCurrent } from '../redux/slices/exhibitSlice'
+import useTranslation from '../hooks/useTranslation'
 import ExhibitImage from '../components/exhibit/ExhibitImage'
 import ExhibitContent from '../components/exhibit/ExhibitContent'
 import AudioPlayer from '../components/exhibit/AudioPlayer'
@@ -9,8 +10,10 @@ import ExhibitNav from '../components/exhibit/ExhibitNav'
 
 function ExhibitPage() {
   const { number } = useParams()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const { current: exhibit, allExhibits, loading, error } = useSelector((state) => state.exhibit)
+  const { t, lang, isRtl } = useTranslation()
 
   useEffect(() => {
     dispatch(fetchExhibit(number))
@@ -41,14 +44,37 @@ function ExhibitPage() {
   }
 
   if (error || !exhibit) {
+    const sorted = [...allExhibits].sort((a, b) =>
+      a.order !== b.order ? a.order - b.order : a.exhibitNumber - b.exhibitNumber
+    )
     return (
       <div className="exhibit-page exhibit-page--error">
-        <div className="exhibit-error">
+        <div className="exhibit-error" dir={isRtl ? 'rtl' : 'ltr'}>
           <p className="exhibit-error__code">#{number}</p>
-          <h1 className="exhibit-error__title">תצוגה לא נמצאה</h1>
+          <h1 className="exhibit-error__title">{t('exhibitNotFound')}</h1>
           <p className="exhibit-error__msg">
-            {error || 'הדף המבוקש אינו זמין כרגע.'}
+            {error || t('exhibitUnavailable')}
           </p>
+
+          {sorted.length > 0 && (
+            <div className="exhibit-error__browse">
+              <p className="exhibit-error__browse-label">{t('browseExhibits')}</p>
+              <div className="exhibit-error__list">
+                {sorted.map((e) => (
+                  <button
+                    key={e._id}
+                    className="exhibit-error__item"
+                    onClick={() => navigate(`/exhibit/${e.exhibitNumber}`)}
+                  >
+                    <span className="exhibit-error__item-num">#{e.exhibitNumber}</span>
+                    <span className="exhibit-error__item-title">
+                      {e.title?.[lang] || e.title?.he}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     )
@@ -57,8 +83,8 @@ function ExhibitPage() {
   return (
     <div className="exhibit-page">
       <ExhibitImage url={exhibit.image?.url} title={exhibit.title?.he} />
-      <ExhibitContent exhibit={exhibit} />
       <AudioPlayer audio={exhibit.audio} />
+      <ExhibitContent exhibit={exhibit} />
       <ExhibitNav currentNumber={number} />
     </div>
   )

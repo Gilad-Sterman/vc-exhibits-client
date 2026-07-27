@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import useTranslation from '../../hooks/useTranslation'
 
 const formatTime = (time) => {
   if (!time || isNaN(time)) return '0:00'
@@ -21,7 +21,7 @@ const PauseIcon = () => (
 )
 
 function AudioPlayer({ audio }) {
-  const lang = useSelector((state) => state.ui.lang)
+  const { t, lang, isRtl } = useTranslation()
   const audioRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -61,8 +61,8 @@ function AudioPlayer({ audio }) {
   }
 
   return (
-    <div className="audio-player">
-      <p className="audio-player__label">מדריך שמע</p>
+    <div className="audio-player" dir={isRtl ? 'rtl' : 'ltr'}>
+      <p className="audio-player__label">{t('audioGuide')}</p>
 
       <audio
         ref={audioRef}
@@ -73,7 +73,7 @@ function AudioPlayer({ audio }) {
         preload="metadata"
       />
 
-      <div className="audio-player__controls">
+      <div className="audio-player__controls" dir="ltr">
         <button className="audio-player__play-btn" onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
           {isPlaying ? <PauseIcon /> : <PlayIcon />}
         </button>
