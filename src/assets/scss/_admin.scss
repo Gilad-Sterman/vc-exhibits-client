@@ -66,7 +66,20 @@
     }
   }
 
-  .login-error {
+  .login-exhibits-link {
+  display: inline-block;
+  margin-bottom: $spacing-md;
+  font-size: 0.82rem;
+  color: $color-teal;
+  text-decoration: none;
+  transition: $transition;
+
+  &:hover {
+    color: $color-navy;
+  }
+}
+
+.login-error {
     color: #c0392b;
     font-size: 0.85rem;
     margin-top: $spacing-sm;
@@ -449,6 +462,96 @@
 .form-audio-preview {
   width: 100%;
   margin-bottom: $spacing-sm;
+}
+
+.form-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+
+  .form-section__title {
+    margin-bottom: 0;
+  }
+}
+
+.lang-tabs {
+  display: flex;
+  gap: 2px;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  padding: 3px;
+  background: $color-bg-alt;
+}
+
+.lang-tab {
+  padding: 4px 14px;
+  font-size: 0.8rem;
+  font-family: $font-heading;
+  border-radius: calc(#{$radius-sm} - 2px);
+  background: transparent;
+  color: $color-text;
+  border: none;
+  cursor: pointer;
+  transition: $transition;
+  letter-spacing: 0.03em;
+
+  &--active {
+    background: $color-navy;
+    color: $color-white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  }
+}
+
+.media-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: $spacing-sm;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  padding: 3px;
+  width: fit-content;
+  background: $color-bg-alt;
+}
+
+.media-tab {
+  padding: 5px $spacing-md;
+  font-size: 0.78rem;
+  border-radius: calc(#{$radius-sm} - 2px);
+  background: transparent;
+  color: $color-text;
+  border: none;
+  cursor: pointer;
+  transition: $transition;
+
+  &--active {
+    background: $color-white;
+    color: $color-navy;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+}
+
+.url-input-area {
+  display: flex;
+  gap: $spacing-sm;
+  align-items: center;
+
+  input[type='url'] {
+    flex: 1;
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    font-size: 0.85rem;
+    background: $color-white;
+    color: $color-text;
+    transition: $transition;
+
+    &:focus {
+      outline: none;
+      border-color: $color-teal;
+    }
+  }
 }
 
 .upload-area {

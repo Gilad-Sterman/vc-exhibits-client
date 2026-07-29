@@ -21,6 +21,17 @@ const translations = {
     exhibitNumber: (n) => `Exhibit #${n}`,
     browseExhibits: 'Browse Exhibits',
   },
+  es: {
+    next: 'Siguiente',
+    prev: 'Anterior',
+    allExhibits: 'Todas las Exposiciones',
+    selectExhibit: 'Seleccionar Exposición',
+    audioGuide: 'Guía de Audio',
+    exhibitNotFound: 'Exposición No Encontrada',
+    exhibitUnavailable: 'Esta exposición no está disponible actualmente.',
+    exhibitNumber: (n) => `Exposición #${n}`,
+    browseExhibits: 'Ver Exposiciones',
+  },
 }
 
 export const t = (lang, key, ...args) => {

@@ -24,7 +24,8 @@ function App() {
           <Route path="exhibits/new" element={<AdminExhibitEdit />} />
           <Route path="exhibits/:id/edit" element={<AdminExhibitEdit />} />
         </Route>
-        <Route path="*" element={<Navigate to="/admin/login" replace />} />
+        <Route path="/" element={<Navigate to="/exhibit/1" replace />} />
+        <Route path="*" element={<Navigate to="/exhibit/1" replace />} />
       </Routes>
     </BrowserRouter>
   )

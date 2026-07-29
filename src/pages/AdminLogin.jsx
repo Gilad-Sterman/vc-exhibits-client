@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { loginAdmin } from '../redux/slices/authSlice'
 
 function AdminLogin() {
@@ -23,6 +23,7 @@ function AdminLogin() {
     <div className="admin-login">
       <div className="login-card">
         <h1>Admin Login</h1>
+        <Link to="/exhibit/1" className="login-exhibits-link">← To Exhibits</Link>
         <form onSubmit={handleSubmit}>
           <div className="login-field">
             <label htmlFor="email">Email</label>

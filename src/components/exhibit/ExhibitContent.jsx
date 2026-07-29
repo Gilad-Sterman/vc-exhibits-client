@@ -1,33 +1,33 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { setLang } from '../../redux/slices/uiSlice'
+import { LANGS, isRtlLang } from '../../utils/langs'
 
 function ExhibitContent({ exhibit }) {
   const dispatch = useDispatch()
   const lang = useSelector((state) => state.ui.lang)
 
-  const hasEnglish = exhibit.title?.en || exhibit.description?.en
+  const availableLangs = LANGS.filter(
+    (l) => exhibit.title?.[l.code] || exhibit.description?.[l.code]
+  )
   const title = exhibit.title?.[lang] || exhibit.title?.he || ''
   const description = exhibit.description?.[lang] || exhibit.description?.he || ''
-  const isRtl = lang === 'he'
+  const isRtl = isRtlLang(lang)
 
   return (
     <div className="exhibit-content">
       <div className="exhibit-content__meta">
         <span className="exhibit-number">#{exhibit.exhibitNumber}</span>
-        {hasEnglish && (
+        {availableLangs.length > 1 && (
           <div className="lang-toggle">
-            <button
-              className={lang === 'he' ? 'active' : ''}
-              onClick={() => dispatch(setLang('he'))}
-            >
-              עב
-            </button>
-            <button
-              className={lang === 'en' ? 'active' : ''}
-              onClick={() => dispatch(setLang('en'))}
-            >
-              EN
-            </button>
+            {availableLangs.map((l) => (
+              <button
+                key={l.code}
+                className={lang === l.code ? 'active' : ''}
+                onClick={() => dispatch(setLang(l.code))}
+              >
+                {l.label}
+              </button>
+            ))}
           </div>
         )}
       </div>

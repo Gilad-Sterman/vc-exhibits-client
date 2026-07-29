@@ -8,18 +8,18 @@ import {
   updateExhibitAdmin,
   clearSaveError,
 } from '../redux/slices/exhibitSlice'
+import { LANGS, isRtlLang } from '../utils/langs'
+
+const makeLangMap = (val = '') => Object.fromEntries(LANGS.map((l) => [l.code, val]))
 
 const EMPTY_FORM = {
   exhibitNumber: '',
   order: '',
   isPublished: false,
-  title: { he: '', en: '' },
-  description: { he: '', en: '' },
+  title: makeLangMap(''),
+  description: makeLangMap(''),
   image: { url: '', publicId: '' },
-  audio: {
-    he: { url: '', publicId: '' },
-    en: { url: '', publicId: '' },
-  },
+  audio: Object.fromEntries(LANGS.map((l) => [l.code, { url: '', publicId: '' }])),
 }
 
 function AdminExhibitEdit() {
@@ -32,12 +32,16 @@ function AdminExhibitEdit() {
   const { adminExhibits, saveLoading, saveError } = useSelector((state) => state.exhibit)
 
   const [form, setForm] = useState(EMPTY_FORM)
-  const [uploading, setUploading] = useState({ image: false, audioHe: false, audioEn: false })
-  const [uploadError, setUploadError] = useState({ image: null, audioHe: null, audioEn: null })
+  const [activeLang, setActiveLang] = useState(LANGS[0].code)
+  const [uploading, setUploading] = useState({ image: false })
+  const [uploadError, setUploadError] = useState({ image: null })
+  const [audioMode, setAudioMode] = useState(
+    Object.fromEntries(LANGS.map((l) => [l.code, 'upload']))
+  )
+  const [imageMode, setImageMode] = useState('upload')
 
   const imageInputRef = useRef(null)
-  const audioHeInputRef = useRef(null)
-  const audioEnInputRef = useRef(null)
+  const audioInputRef = useRef(null)
 
   useEffect(() => {
     if (!isNew && adminExhibits.length === 0) {
@@ -53,13 +57,10 @@ function AdminExhibitEdit() {
           exhibitNumber: exhibit.exhibitNumber ?? '',
           order: exhibit.order ?? '',
           isPublished: exhibit.isPublished ?? false,
-          title: { he: exhibit.title?.he || '', en: exhibit.title?.en || '' },
-          description: { he: exhibit.description?.he || '', en: exhibit.description?.en || '' },
+          title: Object.fromEntries(LANGS.map((l) => [l.code, exhibit.title?.[l.code] || ''])),
+          description: Object.fromEntries(LANGS.map((l) => [l.code, exhibit.description?.[l.code] || ''])),
           image: exhibit.image || { url: '', publicId: '' },
-          audio: {
-            he: exhibit.audio?.he || { url: '', publicId: '' },
-            en: exhibit.audio?.en || { url: '', publicId: '' },
-          },
+          audio: Object.fromEntries(LANGS.map((l) => [l.code, exhibit.audio?.[l.code] || { url: '', publicId: '' }])),
         })
       }
     }
@@ -74,35 +75,31 @@ function AdminExhibitEdit() {
     })
   }
 
-  const handleUpload = async (file, type) => {
+  const handleUpload = async (file, type, lang = null) => {
     const isImage = type === 'image'
+    const key = isImage ? 'image' : lang
     const endpoint = isImage ? '/api/admin/upload/image' : '/api/admin/upload/audio'
     const fieldName = isImage ? 'image' : 'audio'
 
     const formData = new FormData()
     formData.append(fieldName, file)
 
-    setUploading((p) => ({ ...p, [type]: true }))
-    setUploadError((p) => ({ ...p, [type]: null }))
+    setUploading((p) => ({ ...p, [key]: true }))
+    setUploadError((p) => ({ ...p, [key]: null }))
 
     try {
       const { data } = await axios.post(endpoint, formData, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      if (type === 'image') {
+      if (isImage) {
         setForm((p) => ({ ...p, image: data }))
-      } else if (type === 'audioHe') {
-        setForm((p) => ({ ...p, audio: { ...p.audio, he: data } }))
       } else {
-        setForm((p) => ({ ...p, audio: { ...p.audio, en: data } }))
+        setForm((p) => ({ ...p, audio: { ...p.audio, [lang]: data } }))
       }
     } catch (err) {
-      setUploadError((p) => ({
-        ...p,
-        [type]: err.response?.data?.message || 'Upload failed',
-      }))
+      setUploadError((p) => ({ ...p, [key]: err.response?.data?.message || 'Upload failed' }))
     } finally {
-      setUploading((p) => ({ ...p, [type]: false }))
+      setUploading((p) => ({ ...p, [key]: false }))
     }
   }
 
@@ -111,10 +108,13 @@ function AdminExhibitEdit() {
     const action = isNew
       ? createExhibitAdmin(form)
       : updateExhibitAdmin({ id, ...form })
-
     const result = await dispatch(action)
     if (!result.error) navigate('/admin')
   }
+
+  const currentLang = LANGS.find((l) => l.code === activeLang)
+  const dir = isRtlLang(activeLang) ? 'rtl' : 'ltr'
+  const audioUrl = form.audio[activeLang]?.url || ''
 
   return (
     <>
@@ -173,113 +173,96 @@ function AdminExhibitEdit() {
           {form.image?.url && (
             <img className="form-image-preview" src={form.image.url} alt="Preview" />
           )}
-          <div className="upload-area">
-            <input
-              ref={imageInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={(e) => e.target.files[0] && handleUpload(e.target.files[0], 'image')}
-            />
-            <button
-              type="button"
-              className="btn-outline"
-              onClick={() => imageInputRef.current.click()}
-              disabled={uploading.image}
-            >
-              {uploading.image ? 'Uploading…' : form.image?.url ? 'Replace Image' : 'Upload Image'}
-            </button>
-            {uploadError.image && <span className="upload-error">{uploadError.image}</span>}
+          <div className="media-tabs">
+            <button type="button" className={`media-tab${imageMode === 'upload' ? ' media-tab--active' : ''}`} onClick={() => setImageMode('upload')}>Upload File</button>
+            <button type="button" className={`media-tab${imageMode === 'url' ? ' media-tab--active' : ''}`} onClick={() => setImageMode('url')}>Paste URL</button>
           </div>
+          {imageMode === 'upload' ? (
+            <div className="upload-area">
+              <input ref={imageInputRef} type="file" accept="image/*" style={{ display: 'none' }}
+                onChange={(e) => e.target.files[0] && handleUpload(e.target.files[0], 'image')} />
+              <button type="button" className="btn-outline" onClick={() => imageInputRef.current.click()} disabled={uploading.image}>
+                {uploading.image ? 'Uploading…' : form.image?.url ? 'Replace Image' : 'Upload Image'}
+              </button>
+              {uploadError.image && <span className="upload-error">{uploadError.image}</span>}
+            </div>
+          ) : (
+            <div className="url-input-area">
+              <input type="url" placeholder="https://…" value={form.image?.url || ''}
+                onChange={(e) => setForm((p) => ({ ...p, image: { url: e.target.value, publicId: '' } }))} />
+              {form.image?.url && (
+                <button type="button" className="btn-ghost btn-sm" onClick={() => setForm((p) => ({ ...p, image: { url: '', publicId: '' } }))}>Clear</button>
+              )}
+            </div>
+          )}
         </section>
 
         <section className="form-section">
-          <h2 className="form-section__title">Hebrew Content</h2>
-          <div className="form-field">
-            <label>Title (עברית)</label>
-            <input
-              type="text"
-              dir="rtl"
-              value={form.title.he}
-              onChange={(e) => setField('title.he', e.target.value)}
-            />
-          </div>
-          <div className="form-field">
-            <label>Description (עברית)</label>
-            <textarea
-              dir="rtl"
-              rows={5}
-              value={form.description.he}
-              onChange={(e) => setField('description.he', e.target.value)}
-            />
-          </div>
-          <div className="form-field">
-            <label>Audio Guide (HE)</label>
-            {form.audio.he?.url && (
-              <audio controls src={form.audio.he.url} className="form-audio-preview" />
-            )}
-            <div className="upload-area">
-              <input
-                ref={audioHeInputRef}
-                type="file"
-                accept="audio/*"
-                style={{ display: 'none' }}
-                onChange={(e) => e.target.files[0] && handleUpload(e.target.files[0], 'audioHe')}
-              />
-              <button
-                type="button"
-                className="btn-outline"
-                onClick={() => audioHeInputRef.current.click()}
-                disabled={uploading.audioHe}
-              >
-                {uploading.audioHe ? 'Uploading…' : form.audio.he?.url ? 'Replace Audio' : 'Upload Audio'}
-              </button>
-              {uploadError.audioHe && <span className="upload-error">{uploadError.audioHe}</span>}
+          <div className="form-section__header">
+            <h2 className="form-section__title">Content</h2>
+            <div className="lang-tabs">
+              {LANGS.map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  className={`lang-tab${activeLang === l.code ? ' lang-tab--active' : ''}`}
+                  onClick={() => setActiveLang(l.code)}
+                >
+                  {l.label}
+                </button>
+              ))}
             </div>
           </div>
-        </section>
 
-        <section className="form-section">
-          <h2 className="form-section__title">English Content <span className="optional">(optional)</span></h2>
           <div className="form-field">
-            <label>Title (English)</label>
+            <label>Title</label>
             <input
               type="text"
-              value={form.title.en}
-              onChange={(e) => setField('title.en', e.target.value)}
+              dir={dir}
+              value={form.title[activeLang] || ''}
+              onChange={(e) => setField(`title.${activeLang}`, e.target.value)}
             />
           </div>
+
           <div className="form-field">
-            <label>Description (English)</label>
+            <label>Description</label>
             <textarea
+              dir={dir}
               rows={5}
-              value={form.description.en}
-              onChange={(e) => setField('description.en', e.target.value)}
+              value={form.description[activeLang] || ''}
+              onChange={(e) => setField(`description.${activeLang}`, e.target.value)}
             />
           </div>
+
           <div className="form-field">
-            <label>Audio Guide (EN)</label>
-            {form.audio.en?.url && (
-              <audio controls src={form.audio.en.url} className="form-audio-preview" />
-            )}
-            <div className="upload-area">
-              <input
-                ref={audioEnInputRef}
-                type="file"
-                accept="audio/*"
-                style={{ display: 'none' }}
-                onChange={(e) => e.target.files[0] && handleUpload(e.target.files[0], 'audioEn')}
-              />
-              <button
-                type="button"
-                className="btn-outline"
-                onClick={() => audioEnInputRef.current.click()}
-                disabled={uploading.audioEn}
-              >
-                {uploading.audioEn ? 'Uploading…' : form.audio.en?.url ? 'Replace Audio' : 'Upload Audio'}
-              </button>
-              {uploadError.audioEn && <span className="upload-error">{uploadError.audioEn}</span>}
+            <label>Audio Guide — {currentLang?.label}</label>
+            {audioUrl && <audio controls src={audioUrl} className="form-audio-preview" />}
+            <div className="media-tabs">
+              <button type="button" className={`media-tab${audioMode[activeLang] === 'upload' ? ' media-tab--active' : ''}`}
+                onClick={() => setAudioMode((p) => ({ ...p, [activeLang]: 'upload' }))}>Upload File</button>
+              <button type="button" className={`media-tab${audioMode[activeLang] === 'url' ? ' media-tab--active' : ''}`}
+                onClick={() => setAudioMode((p) => ({ ...p, [activeLang]: 'url' }))}>Paste URL</button>
             </div>
+            {audioMode[activeLang] === 'upload' ? (
+              <div className="upload-area">
+                <input ref={audioInputRef} type="file" accept="audio/*" style={{ display: 'none' }}
+                  onChange={(e) => e.target.files[0] && handleUpload(e.target.files[0], 'audio', activeLang)} />
+                <button type="button" className="btn-outline"
+                  onClick={() => audioInputRef.current.click()} disabled={uploading[activeLang]}>
+                  {uploading[activeLang] ? 'Uploading…' : audioUrl ? 'Replace Audio' : 'Upload Audio'}
+                </button>
+                {uploadError[activeLang] && <span className="upload-error">{uploadError[activeLang]}</span>}
+              </div>
+            ) : (
+              <div className="url-input-area">
+                <input type="url" placeholder="https://…" value={audioUrl}
+                  onChange={(e) => setForm((p) => ({ ...p, audio: { ...p.audio, [activeLang]: { url: e.target.value, publicId: '' } } }))} />
+                {audioUrl && (
+                  <button type="button" className="btn-ghost btn-sm"
+                    onClick={() => setForm((p) => ({ ...p, audio: { ...p.audio, [activeLang]: { url: '', publicId: '' } } }))}>Clear</button>
+                )}
+              </div>
+            )}
           </div>
         </section>
 
